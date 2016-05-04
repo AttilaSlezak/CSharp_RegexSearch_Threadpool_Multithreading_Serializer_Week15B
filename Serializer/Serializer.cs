@@ -12,9 +12,16 @@ namespace Serializer
 {
     public partial class Serializer : Form
     {
+        public int currentSerialNumber = 1;
+
         public Serializer()
         {
             InitializeComponent();
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
