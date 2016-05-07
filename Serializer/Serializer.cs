@@ -100,7 +100,7 @@ namespace Serializer
 
         private void setSerialNumber()
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 1; i < 100; i++)
             {
                 if (!File.Exists(_personDataFolder + "person" + i.ToString("D2") + ".dat"))
                 {
@@ -110,11 +110,26 @@ namespace Serializer
             }
         }
 
+        private void setPersonData()
+        {
+            _person.Name = txtName.Text;
+            _person.Address = txtAddress.Text;
+            _person.Phone = txtPhone.Text;
+            _person.DateOfRecording = DateTime.Now;
+        }
+
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (checkDataFormat())
             {
-                
+                checkFileNameSequence();
+                setSerialNumber();
+                setPersonData();
+                string path = _personDataFolder + "person" + _person.SerialNumber.ToString("D2") + ".dat";
+                IFormatter formatter = new BinaryFormatter();
+                FileStream fileStream = new FileStream(path, FileMode.Create);
+                formatter.Serialize(fileStream, _person);
+                fileStream.Close();
             }
         }
 

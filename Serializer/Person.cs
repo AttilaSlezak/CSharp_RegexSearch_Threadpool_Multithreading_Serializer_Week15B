@@ -20,7 +20,7 @@ namespace Serializer
         public string Name { get { return _name; } set { _name = value; } }
         public string Address { get { return _address; } set { _address = value; } }
         public string Phone { get { return _phone; } set { _phone = value; } }
-        public DateTime DateOfRecording { get { return _dateOfRecording; } }
+        public DateTime DateOfRecording { get { return _dateOfRecording; } set { _dateOfRecording = value; } }
         public int SerialNumber { get { return _serialNumber; } set { _serialNumber = value; } }
 
         public Person()
@@ -28,13 +28,13 @@ namespace Serializer
 
         }
 
-        public Person(string name, string address, string phone)
+        /*public Person(string name, string address, string phone)
         {
             this._name = name;
             this._address = address;
             this._phone = phone;
             this._dateOfRecording = DateTime.Now;
-        }
+        }*/
 
         public Person(SerializationInfo info, StreamingContext context)
         {
