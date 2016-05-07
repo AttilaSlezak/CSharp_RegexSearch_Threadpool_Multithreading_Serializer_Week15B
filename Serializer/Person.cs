@@ -23,6 +23,11 @@ namespace Serializer
         public DateTime DateOfRecording { get { return _dateOfRecording; } }
         public int SerialNumber { get { return _serialNumber; } set { _serialNumber = value; } }
 
+        public Person()
+        {
+
+        }
+
         public Person(string name, string address, string phone)
         {
             this._name = name;
