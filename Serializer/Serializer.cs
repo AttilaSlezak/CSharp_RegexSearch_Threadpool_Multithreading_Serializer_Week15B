@@ -51,7 +51,23 @@ namespace Serializer
         
         private void repairFileNameSequence(List<int> holes)
         {
+            int actualHoleIndex = 0;
+            for (int i = holes[0]+1; i < 100; i++)
+            {
+                string currentPath = _personDataFolder + "person" + i.ToString("D2") + ".dat";
 
+                if (File.Exists(currentPath))
+                {
+                    string destPath = _personDataFolder + "person" + (i - actualHoleIndex - 1).ToString("D2") + ".dat";
+                    File.Move(currentPath, destPath);
+                }
+                else
+                {
+                    actualHoleIndex = holes.IndexOf(i);
+                    if (actualHoleIndex == -1)
+                        break;
+                }
+            }
         }
 
         private void checkFileNameSequence()
@@ -70,7 +86,16 @@ namespace Serializer
                 }
             }
             if (isThereProblem)
+            {
+                for (int i = 99; i > holes[0]; i--)
+                {
+                    if (holes.IndexOf(i) != -1)
+                        holes.Remove(holes.IndexOf(i));
+                    else
+                        break;
+                }
                 repairFileNameSequence(holes);
+            }
         }
 
         private void setSerialNumber()
@@ -95,7 +120,7 @@ namespace Serializer
 
         private void btnPrevious_Click(object sender, EventArgs e)
         {
-            
+           
         }
 
         private void btnNext_Click(object sender, EventArgs e)
