@@ -118,6 +118,23 @@ namespace Serializer
             _person.DateOfRecording = DateTime.Now;
         }
 
+        private void displayPersonData()
+        {
+            txtName.Text = _person.Name;
+            txtAddress.Text = _person.Address;
+            txtPhone.Text = _person.Phone;
+        }
+
+        private void deserialize()
+        {
+            string path = _personDataFolder + "person" + _person.SerialNumber.ToString("D2") + ".dat";
+            IFormatter formatter = new BinaryFormatter();
+            FileStream fileStream = new FileStream(path, FileMode.Open);
+            _person = (Person)formatter.Deserialize(fileStream);
+            fileStream.Close();
+            displayPersonData();
+        }
+
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (checkDataFormat())
@@ -130,17 +147,22 @@ namespace Serializer
                 FileStream fileStream = new FileStream(path, FileMode.Create);
                 formatter.Serialize(fileStream, _person);
                 fileStream.Close();
+                MessageBox.Show(_person.Name + "'s data has been successfully saved\ninto " + path + ".", "Successful Saving");
             }
         }
 
         private void btnPrevious_Click(object sender, EventArgs e)
         {
-           
+           _person.SerialNumber -= 1;
+            if (_person.SerialNumber < 1)
+                _person.SerialNumber = 99;
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-
+            _person.SerialNumber += 1;
+            if (_person.SerialNumber > 99)
+                _person.SerialNumber = 1;
         }
 
         private void Serializer_Load(object sender, EventArgs e)
@@ -149,6 +171,9 @@ namespace Serializer
             {
                 new DirectoryInfo(_personDataFolder).Create();
             }
+            checkFileNameSequence();
+            _person.SerialNumber = 1;
+            deserialize();
         }
     }
 }
