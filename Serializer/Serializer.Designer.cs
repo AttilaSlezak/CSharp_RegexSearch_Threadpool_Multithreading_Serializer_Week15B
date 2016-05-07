@@ -144,6 +144,7 @@
             this.Controls.Add(this.lblName);
             this.Name = "Serializer";
             this.Text = "Serializer";
+            this.Load += new System.EventHandler(this.Serializer_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
