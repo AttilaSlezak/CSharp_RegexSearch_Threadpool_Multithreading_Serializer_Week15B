@@ -60,11 +60,16 @@ namespace Serializer
                 {
                     string destPath = _personDataFolder + "person" + (i - actualHoleIndex - 1).ToString("D2") + ".dat";
                     File.Move(currentPath, destPath);
+
+                    if (_person.SerialNumber == i)
+                        _person.SerialNumber = i - actualHoleIndex - 1;
                 }
                 else
                 {
-                    actualHoleIndex = holes.IndexOf(i);
-                    if (actualHoleIndex == -1)
+                    actualHoleIndex = holes.IndexOf(i) != -1 ? holes.IndexOf(i) : actualHoleIndex;
+                    if (holes.IndexOf(i) == -1)
+                        if (_person.SerialNumber >= i)
+                            _person.SerialNumber = i - actualHoleIndex - 1;
                         break;
                 }
             }
@@ -98,7 +103,7 @@ namespace Serializer
             }
         }
 
-        private void setSerialNumber()
+        private void setNextSerialNumber()
         {
             for (int i = 1; i < 100; i++)
             {
@@ -107,6 +112,29 @@ namespace Serializer
                     _person.SerialNumber = i;
                     break;
                 }
+            }
+        }
+
+        private void setSerialNumber(int direction)
+        {
+            int beginning = _person.SerialNumber + direction;
+            bool firstRun = true;
+
+            for (int i = beginning; i != beginning || firstRun; i = i + direction)
+            {
+                if (File.Exists(_personDataFolder + "person" + i.ToString("D2") + ".dat"))
+                {
+                    _person.SerialNumber = i;
+                    break;
+                }
+
+                if (i < 1)
+                    i = 100;
+                else if (i > 99)
+                    i = 0;
+
+                if (firstRun)
+                    firstRun = false;
             }
         }
 
@@ -127,12 +155,23 @@ namespace Serializer
 
         private void deserialize()
         {
+            checkFileNameSequence();
+            int currentSerialNumber = _person.SerialNumber;
             string path = _personDataFolder + "person" + _person.SerialNumber.ToString("D2") + ".dat";
             IFormatter formatter = new BinaryFormatter();
-            FileStream fileStream = new FileStream(path, FileMode.Open);
-            _person = (Person)formatter.Deserialize(fileStream);
-            fileStream.Close();
-            displayPersonData();
+            try
+            {
+                MessageBox.Show(path);
+                FileStream fileStream = new FileStream(path, FileMode.Open);
+                _person = (Person)formatter.Deserialize(fileStream);
+                fileStream.Close();
+                _person.SerialNumber = currentSerialNumber;
+                displayPersonData();
+            }
+            catch
+            {
+                MessageBox.Show("Something is went wrong.");
+            }
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -140,9 +179,10 @@ namespace Serializer
             if (checkDataFormat())
             {
                 checkFileNameSequence();
-                setSerialNumber();
+                setNextSerialNumber();
                 setPersonData();
                 string path = _personDataFolder + "person" + _person.SerialNumber.ToString("D2") + ".dat";
+
                 IFormatter formatter = new BinaryFormatter();
                 FileStream fileStream = new FileStream(path, FileMode.Create);
                 formatter.Serialize(fileStream, _person);
@@ -153,16 +193,15 @@ namespace Serializer
 
         private void btnPrevious_Click(object sender, EventArgs e)
         {
-           _person.SerialNumber -= 1;
-            if (_person.SerialNumber < 1)
-                _person.SerialNumber = 99;
+            setSerialNumber(-1);
+            deserialize();
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            _person.SerialNumber += 1;
-            if (_person.SerialNumber > 99)
-                _person.SerialNumber = 1;
+            MessageBox.Show(_person.SerialNumber.ToString());
+            setSerialNumber(1);
+            deserialize();
         }
 
         private void Serializer_Load(object sender, EventArgs e)
@@ -171,7 +210,6 @@ namespace Serializer
             {
                 new DirectoryInfo(_personDataFolder).Create();
             }
-            checkFileNameSequence();
             _person.SerialNumber = 1;
             deserialize();
         }
