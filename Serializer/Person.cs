@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
@@ -9,14 +8,16 @@ using Serializer.Properties;
 namespace Serializer
 {
     [Serializable]
-    class Person : ISerializable
+    class Person : ISerializable, IDeserializationCallback
     {
+        [NonSerialized] private static int _serialNumberStatic;
         private string _name;
         private string _address;
         private string _phone;
         private DateTime _dateOfRecording;
         [NonSerialized] private int _serialNumber;
 
+        public static int SerialNumberStatic { get { return _serialNumberStatic; } set { _serialNumberStatic = value; } }
         public string Name { get { return _name; } set { _name = value; } }
         public string Address { get { return _address; } set { _address = value; } }
         public string Phone { get { return _phone; } set { _phone = value; } }
@@ -50,6 +51,11 @@ namespace Serializer
             info.AddValue("Address", _address);
             info.AddValue("Phone", _phone);
             info.AddValue("Date of recording", _dateOfRecording);
+        }
+
+        public void OnDeserialization(object sender)
+        {
+            _serialNumber = _serialNumberStatic;
         }
     }
 }

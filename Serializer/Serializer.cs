@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using System.Reflection;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -27,7 +25,7 @@ namespace Serializer
             InitializeComponent();
         }
 
-        private bool checkDataFormat()
+        private bool CheckDataFormat()
         {
             if (!Regex.IsMatch(txtName.Text, @"^([A-ZÄÁÉÍÓÖŐUÚÜŰ]([A-Za-zäÄÁÉÍÓÖŐUÚÜŰáéíóöőüű]*([ ]|[.][ ]|[A-Za-zäáéíóöőüű]$))){2,}$"))
             {
@@ -49,7 +47,7 @@ namespace Serializer
             return true;
         }
         
-        private void repairFileNameSequence(List<int> holes)
+        private void RepairFileNameSequence(List<int> holes)
         {
             int actualHoleIndex = 0;
             for (int i = holes[0]+1; i < 100; i++)
@@ -75,7 +73,7 @@ namespace Serializer
             }
         }
 
-        private void checkFileNameSequence()
+        private void CheckFileNameSequence()
         {
             List<int> holes = new List<int>();
             bool isThereProblem = false;
@@ -99,11 +97,11 @@ namespace Serializer
                     else
                         break;
                 }
-                repairFileNameSequence(holes);
+                RepairFileNameSequence(holes);
             }
         }
 
-        private void setNextSerialNumber()
+        private void SetNextSerialNumber()
         {
             for (int i = 1; i < 100; i++)
             {
@@ -115,15 +113,15 @@ namespace Serializer
             }
         }
 
-        private void setSerialNumber(int direction)
+        private void SetSerialNumber(int direction)
         {
-            checkFileNameSequence();
-            setNextSerialNumber();
+            CheckFileNameSequence();
+            SetNextSerialNumber();
 
             if (direction == 0)
             {
                 _person.SerialNumber = 1;
-                deserialize();
+                Deserialize();
                 return;
             }
 
@@ -132,24 +130,24 @@ namespace Serializer
             if (_person.SerialNumber == 0)
             {
                 _person.SerialNumber = _nextSavingSerialNumber;
-                createNewForm();
+                CreateNewForm();
             }
             else if (_person.SerialNumber == _nextSavingSerialNumber)
             {
-                createNewForm();
+                CreateNewForm();
             }
             else if (_person.SerialNumber == _nextSavingSerialNumber + 1)
             {
                 _person.SerialNumber = 1;
-                deserialize();
+                Deserialize();
             }
             else
             {
-                deserialize();
+                Deserialize();
             }
         }
 
-        private void setPersonData()
+        private void SetPersonData()
         {
             _person.Name = txtName.Text;
             _person.Address = txtAddress.Text;
@@ -157,15 +155,16 @@ namespace Serializer
             _person.DateOfRecording = DateTime.Now;
         }
 
-        private void displayPersonData()
+        private void DisplayPersonData()
         {
             txtName.Text = _person.Name;
             txtAddress.Text = _person.Address;
             txtPhone.Text = _person.Phone;
-            lblCounter.Text = _person.SerialNumber.ToString("D2") + "/" + (_nextSavingSerialNumber-1).ToString("D2");
+            lblCounter.Text = _person.SerialNumber.ToString("D2") + "/" + (_nextSavingSerialNumber-1).ToString("D2") 
+                + "  (Date of recording: " + _person.DateOfRecording + ")";
         }
 
-        private void createNewForm()
+        private void CreateNewForm()
         {
             _person.SerialNumber = _nextSavingSerialNumber;
             txtName.Text = "";
@@ -174,18 +173,17 @@ namespace Serializer
             lblCounter.Text = "New Person";
         }
 
-        private void deserialize()
+        private void Deserialize()
         {
             string path = _personDataFolder + "person" + _person.SerialNumber.ToString("D2") + ".dat";
-            int currentSerialNumber = _person.SerialNumber;
+            Person.SerialNumberStatic = _person.SerialNumber;
             IFormatter formatter = new BinaryFormatter();
             try
             {
                 FileStream fileStream = new FileStream(path, FileMode.Open);
                 _person = (Person)formatter.Deserialize(fileStream);
                 fileStream.Close();
-                _person.SerialNumber = currentSerialNumber;
-                displayPersonData();
+                DisplayPersonData();
             }
             catch
             {
@@ -196,11 +194,11 @@ namespace Serializer
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (checkDataFormat())
+            if (CheckDataFormat())
             {
-                checkFileNameSequence();
-                setNextSerialNumber();
-                setPersonData();
+                CheckFileNameSequence();
+                SetNextSerialNumber();
+                SetPersonData();
 
                 string question = "Are you sure you really would like to overwrite this person's (" + _person.Name + ") data form?";
                 if (_person.SerialNumber != _nextSavingSerialNumber 
@@ -225,12 +223,12 @@ namespace Serializer
 
         private void btnPrevious_Click(object sender, EventArgs e)
         {
-            setSerialNumber(-1);
+            SetSerialNumber(-1);
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            setSerialNumber(1);
+            SetSerialNumber(1);
         }
 
         private void Serializer_Load(object sender, EventArgs e)
@@ -239,12 +237,12 @@ namespace Serializer
             {
                 new DirectoryInfo(_personDataFolder).Create();
             }
-            setSerialNumber(0);
+            SetSerialNumber(0);
         }
 
         private void btnNew_Click(object sender, EventArgs e)
         {
-            createNewForm();
+            CreateNewForm();
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
@@ -261,8 +259,8 @@ namespace Serializer
                 File.Delete(path);
                 MessageBox.Show(_person.Name + " has been successfully deleted from the database with the corresponding file:\n" + path, 
                     "Confirmation");
-                setSerialNumber(-1);
-                displayPersonData();
+                SetSerialNumber(-1);
+                DisplayPersonData();
             }
             catch
             {
