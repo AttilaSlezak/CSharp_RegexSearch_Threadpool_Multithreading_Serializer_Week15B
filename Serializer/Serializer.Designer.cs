@@ -147,6 +147,7 @@
             this.btnDelete.TabIndex = 11;
             this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // Serializer
             // 
@@ -165,6 +166,7 @@
             this.Controls.Add(this.lblPhone);
             this.Controls.Add(this.lblAddress);
             this.Controls.Add(this.lblName);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Serializer";
             this.Text = "Serializer";
             this.Load += new System.EventHandler(this.Serializer_Load);

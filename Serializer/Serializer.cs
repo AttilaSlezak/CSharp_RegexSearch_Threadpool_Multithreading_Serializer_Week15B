@@ -176,12 +176,11 @@ namespace Serializer
 
         private void deserialize()
         {
-            int currentSerialNumber = _person.SerialNumber;
             string path = _personDataFolder + "person" + _person.SerialNumber.ToString("D2") + ".dat";
+            int currentSerialNumber = _person.SerialNumber;
             IFormatter formatter = new BinaryFormatter();
             try
             {
-                MessageBox.Show(path);
                 FileStream fileStream = new FileStream(path, FileMode.Open);
                 _person = (Person)formatter.Deserialize(fileStream);
                 fileStream.Close();
@@ -202,12 +201,24 @@ namespace Serializer
                 checkFileNameSequence();
                 setNextSerialNumber();
                 setPersonData();
+
+                string question = "Are you sure you really would like to overwrite this person's (" + _person.Name + ") data form?";
+                if (_person.SerialNumber != _nextSavingSerialNumber 
+                    && MessageBox.Show(question, "Confirmation", MessageBoxButtons.YesNo) == DialogResult.No)
+                {
+                    return;
+                }
                 string path = _personDataFolder + "person" + _person.SerialNumber.ToString("D2") + ".dat";
 
                 IFormatter formatter = new BinaryFormatter();
-                FileStream fileStream = new FileStream(path, FileMode.Create);
+                FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate);
                 formatter.Serialize(fileStream, _person);
                 fileStream.Close();
+                if (lblCounter.Text == "New Person")
+                {
+                    lblCounter.Text = _person.SerialNumber.ToString("D2") + "/" + (_nextSavingSerialNumber).ToString("D2");
+                    _nextSavingSerialNumber++;
+                }
                 MessageBox.Show(_person.Name + "'s data has been successfully saved\ninto " + path + ".", "Successful Saving");
             }
         }
@@ -234,6 +245,30 @@ namespace Serializer
         private void btnNew_Click(object sender, EventArgs e)
         {
             createNewForm();
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            string question = "Are you sure you really would like to delete this person's (" + _person.Name + ") data form?";
+            if (_person.SerialNumber == _nextSavingSerialNumber
+                || MessageBox.Show(question, "Confirmation", MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                return;
+            }
+            try
+            {
+                string path = _personDataFolder + "person" + _person.SerialNumber.ToString("D2") + ".dat";
+                File.Delete(path);
+                MessageBox.Show(_person.Name + " has been successfully deleted from the database with the corresponding file:\n" + path, 
+                    "Confirmation");
+                setSerialNumber(-1);
+                displayPersonData();
+            }
+            catch
+            {
+                MessageBox.Show("Something is went wrong. Program is restarting...", "Error");
+                Serializer_Load("deserialize", EventArgs.Empty);
+            }
         }
     }
 }
