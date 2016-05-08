@@ -19,8 +19,8 @@ namespace Serializer
     {
         private Person _person = new Person();
         private string _personDataFolder = @"C:\testfiles\PersonData\";
-        //public int _currentSerialNumber = 1;
-        //public int _nextSavingSerialNumber = 1;
+        private int _nextSavingSerialNumber = 1;
+        
 
         public Serializer()
         {
@@ -109,7 +109,7 @@ namespace Serializer
             {
                 if (!File.Exists(_personDataFolder + "person" + i.ToString("D2") + ".dat"))
                 {
-                    _person.SerialNumber = i;
+                    _nextSavingSerialNumber = i;
                     break;
                 }
             }
@@ -117,24 +117,35 @@ namespace Serializer
 
         private void setSerialNumber(int direction)
         {
-            int beginning = _person.SerialNumber + direction;
-            bool firstRun = true;
+            checkFileNameSequence();
+            setNextSerialNumber();
 
-            for (int i = beginning; i != beginning || firstRun; i = i + direction)
+            if (direction == 0)
             {
-                if (File.Exists(_personDataFolder + "person" + i.ToString("D2") + ".dat"))
-                {
-                    _person.SerialNumber = i;
-                    break;
-                }
+                _person.SerialNumber = 1;
+                deserialize();
+                return;
+            }
 
-                if (i < 1)
-                    i = 100;
-                else if (i > 99)
-                    i = 0;
+            _person.SerialNumber += direction;
 
-                if (firstRun)
-                    firstRun = false;
+            if (_person.SerialNumber == 0)
+            {
+                _person.SerialNumber = _nextSavingSerialNumber;
+                createNewForm();
+            }
+            else if (_person.SerialNumber == _nextSavingSerialNumber)
+            {
+                createNewForm();
+            }
+            else if (_person.SerialNumber == _nextSavingSerialNumber + 1)
+            {
+                _person.SerialNumber = 1;
+                deserialize();
+            }
+            else
+            {
+                deserialize();
             }
         }
 
@@ -151,11 +162,20 @@ namespace Serializer
             txtName.Text = _person.Name;
             txtAddress.Text = _person.Address;
             txtPhone.Text = _person.Phone;
+            lblCounter.Text = _person.SerialNumber.ToString("D2") + "/" + (_nextSavingSerialNumber-1).ToString("D2");
+        }
+
+        private void createNewForm()
+        {
+            _person.SerialNumber = _nextSavingSerialNumber;
+            txtName.Text = "";
+            txtAddress.Text = "";
+            txtPhone.Text = "";
+            lblCounter.Text = "New Person";
         }
 
         private void deserialize()
         {
-            checkFileNameSequence();
             int currentSerialNumber = _person.SerialNumber;
             string path = _personDataFolder + "person" + _person.SerialNumber.ToString("D2") + ".dat";
             IFormatter formatter = new BinaryFormatter();
@@ -170,7 +190,8 @@ namespace Serializer
             }
             catch
             {
-                MessageBox.Show("Something is went wrong.");
+                MessageBox.Show("Something is went wrong. Program is restarting...", "Error");
+                Serializer_Load("deserialize", EventArgs.Empty);
             }
         }
 
@@ -194,14 +215,11 @@ namespace Serializer
         private void btnPrevious_Click(object sender, EventArgs e)
         {
             setSerialNumber(-1);
-            deserialize();
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(_person.SerialNumber.ToString());
             setSerialNumber(1);
-            deserialize();
         }
 
         private void Serializer_Load(object sender, EventArgs e)
@@ -210,8 +228,12 @@ namespace Serializer
             {
                 new DirectoryInfo(_personDataFolder).Create();
             }
-            _person.SerialNumber = 1;
-            deserialize();
+            setSerialNumber(0);
+        }
+
+        private void btnNew_Click(object sender, EventArgs e)
+        {
+            createNewForm();
         }
     }
 }

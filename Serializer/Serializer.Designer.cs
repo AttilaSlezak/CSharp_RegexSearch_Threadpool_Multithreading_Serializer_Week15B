@@ -38,6 +38,8 @@
             this.btnPrevious = new System.Windows.Forms.Button();
             this.btnNext = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
+            this.btnNew = new System.Windows.Forms.Button();
+            this.btnDelete = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lblName
@@ -70,31 +72,31 @@
             // lblCounter
             // 
             this.lblCounter.AutoSize = true;
-            this.lblCounter.Location = new System.Drawing.Point(371, 180);
+            this.lblCounter.Location = new System.Drawing.Point(22, 183);
             this.lblCounter.Name = "lblCounter";
-            this.lblCounter.Size = new System.Drawing.Size(29, 13);
+            this.lblCounter.Size = new System.Drawing.Size(65, 13);
             this.lblCounter.TabIndex = 3;
-            this.lblCounter.Text = "New";
+            this.lblCounter.Text = "New Person";
             // 
             // txtName
             // 
             this.txtName.Location = new System.Drawing.Point(25, 40);
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(375, 20);
+            this.txtName.Size = new System.Drawing.Size(399, 20);
             this.txtName.TabIndex = 4;
             // 
             // txtAddress
             // 
             this.txtAddress.Location = new System.Drawing.Point(25, 95);
             this.txtAddress.Name = "txtAddress";
-            this.txtAddress.Size = new System.Drawing.Size(375, 20);
+            this.txtAddress.Size = new System.Drawing.Size(399, 20);
             this.txtAddress.TabIndex = 5;
             // 
             // txtPhone
             // 
             this.txtPhone.Location = new System.Drawing.Point(25, 150);
             this.txtPhone.Name = "txtPhone";
-            this.txtPhone.Size = new System.Drawing.Size(375, 20);
+            this.txtPhone.Size = new System.Drawing.Size(399, 20);
             this.txtPhone.TabIndex = 6;
             // 
             // btnPrevious
@@ -109,7 +111,7 @@
             // 
             // btnNext
             // 
-            this.btnNext.Location = new System.Drawing.Point(175, 210);
+            this.btnNext.Location = new System.Drawing.Point(106, 210);
             this.btnNext.Name = "btnNext";
             this.btnNext.Size = new System.Drawing.Size(75, 23);
             this.btnNext.TabIndex = 8;
@@ -119,7 +121,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(325, 210);
+            this.btnSave.Location = new System.Drawing.Point(268, 210);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 9;
@@ -127,11 +129,32 @@
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
+            // btnNew
+            // 
+            this.btnNew.Location = new System.Drawing.Point(187, 210);
+            this.btnNew.Name = "btnNew";
+            this.btnNew.Size = new System.Drawing.Size(75, 23);
+            this.btnNew.TabIndex = 10;
+            this.btnNew.Text = "New Form";
+            this.btnNew.UseVisualStyleBackColor = true;
+            this.btnNew.Click += new System.EventHandler(this.btnNew_Click);
+            // 
+            // btnDelete
+            // 
+            this.btnDelete.Location = new System.Drawing.Point(349, 210);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(75, 23);
+            this.btnDelete.TabIndex = 11;
+            this.btnDelete.Text = "Delete";
+            this.btnDelete.UseVisualStyleBackColor = true;
+            // 
             // Serializer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(425, 251);
+            this.ClientSize = new System.Drawing.Size(453, 251);
+            this.Controls.Add(this.btnDelete);
+            this.Controls.Add(this.btnNew);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnNext);
             this.Controls.Add(this.btnPrevious);
@@ -162,6 +185,8 @@
         private System.Windows.Forms.Button btnPrevious;
         private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnNew;
+        private System.Windows.Forms.Button btnDelete;
     }
 }
 
