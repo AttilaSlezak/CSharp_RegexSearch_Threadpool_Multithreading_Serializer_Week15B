@@ -42,6 +42,7 @@ after deserialization.</p>
   <li>Implement the IDeserializationCallback interface with the person class! Make the OnDeserialization() operation calculate the value of the serial number data member!</li>
   <li>Prepare the operations of clicking the 'Previous' and 'Next' buttons that manages the operations, which make the previous and the next data of the persons appear in the fields in accordance with the serial numbers.</li>
 </ol>
+<p>In addition to the above-mentioned, I have completed the program with two more buttons, namely 'New Form' and 'Delete'. Now the user can update any of the selected person's data with the 'Save' button, and can fill a new form with the 'New Form' button to add a new person to the list. And of course, user also can delete any of the people in the list with clicking on the 'Delete' button.</p>
 
 <h3 id="ThreadPool">ThreadPoolDemo</h3>
 <p>In this exercise, I had to create an application that uses the thread pool to queue up methods to call on separate threads.</p>
