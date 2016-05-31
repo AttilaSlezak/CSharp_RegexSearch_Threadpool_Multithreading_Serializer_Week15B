@@ -16,7 +16,9 @@ namespace Serializer
     public partial class Serializer : Form
     {
         private Person _person = new Person();
-        private string _personDataFolder = @"C:\testfiles\PersonData\";
+        //private string _personDataFolder = @"C:\testfiles\PersonData\";
+        private string _personDataFolder = Directory.GetCurrentDirectory().Substring(0, (Directory.GetCurrentDirectory().IndexOf("Serializer") + 11)) 
+            + @"PersonData\";
         private int _nextSavingSerialNumber = 1;
         
 
@@ -36,12 +38,13 @@ namespace Serializer
             }
             else if (!Regex.IsMatch(txtAddress.Text, @"^[A-Za-zÄÁÉÍÓÖŐUÚÜŰäáéíóöőüű0-9()&. /,-]{6,}$"))
             {
-                MessageBox.Show("The address is invalid!", "Invalid Address");
+                MessageBox.Show("The address is invalid!\nIt must be at least six characters long!", "Invalid Address");
                 return false;
             }
             else if (!Regex.IsMatch(txtPhone.Text, @"^[0-9()/ -]{7,}$"))
             {
-                MessageBox.Show("The phone number is invalid!", "Invalid Phone number");
+                MessageBox.Show("The phone number is invalid!\nIt must be at least seven characters long and it can be only numbers and format characters!", 
+                    "Invalid Phone number");
                 return false;
             }
             return true;
@@ -108,15 +111,21 @@ namespace Serializer
                 if (!File.Exists(_personDataFolder + "person" + i.ToString("D2") + ".dat"))
                 {
                     _nextSavingSerialNumber = i;
-                    break;
+                    return;
                 }
             }
+            _nextSavingSerialNumber = 1;
         }
 
         private void SetSerialNumber(int direction)
         {
             CheckFileNameSequence();
             SetNextSerialNumber();
+            if (_nextSavingSerialNumber == 1)
+            {
+                CreateNewForm();
+                return;
+            }
 
             if (direction == 0)
             {
@@ -171,6 +180,7 @@ namespace Serializer
             txtAddress.Text = "";
             txtPhone.Text = "";
             lblCounter.Text = "New Person";
+            SetPersonData();
         }
 
         private void Deserialize()
@@ -260,7 +270,8 @@ namespace Serializer
                 MessageBox.Show(_person.Name + " has been successfully deleted from the database with the corresponding file:\n" + path, 
                     "Confirmation");
                 SetSerialNumber(-1);
-                DisplayPersonData();
+                if (_nextSavingSerialNumber != 1)
+                    DisplayPersonData();
             }
             catch
             {
